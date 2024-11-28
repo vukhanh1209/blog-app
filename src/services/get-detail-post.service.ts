@@ -11,9 +11,13 @@ export async function getPostDetailService(
       baseApiUrl: process.env.NEXT_PUBLIC_BASE_URL + "/posts/" + postId,
       next: {
         revalidate: 60,
-        tags: ["POST-DETAIL"],
+        tags: ["POST-DETAIL", String(postId)],
       },
     });
+    if (!res.ok) {
+      throw new Error("Failed to fetch post");
+    }
+
     const posts = await res.json();
     return {
       status: res.ok,
@@ -24,7 +28,7 @@ export async function getPostDetailService(
     return {
       status: false,
       message: (error as Error)?.message,
-      result: {},
+      result: {} as Blog,
     };
   }
 }

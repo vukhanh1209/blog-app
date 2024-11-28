@@ -13,6 +13,7 @@ import {
 import { toast } from "sonner";
 import { ROUTES } from "@/constant/route.constant";
 import { useRouter } from "next/navigation";
+import { deletePostService } from "@/services/delete-post.service";
 
 type Props = {
   id: string;
@@ -22,12 +23,12 @@ export default function DeleteButton({ id }: Props) {
   const router = useRouter();
   const handleDelete = async () => {
     try {
-      await fetch(`/api/posts/${id}`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-      });
-      router.push(ROUTES.home);
-      toast.success("Post deleted successfully");
+      const res = await deletePostService(id);
+      if (res.status) {
+        toast.success("Post deleted successfully");
+        router.push(ROUTES.home);
+        return;
+      }
     } catch {
       toast.error("Failed to delete post. Please try again.");
     }

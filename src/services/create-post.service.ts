@@ -1,7 +1,7 @@
 "use server";
 import { fetchApiUtil } from "@/lib/fetch-client";
 import { ApiResponse, CreatePostRequest } from "@/types/api.type";
-import { revalidateTag } from "next/cache";
+import { revalidatePath } from "next/cache";
 
 export async function createPostService(
   req: CreatePostRequest
@@ -12,8 +12,10 @@ export async function createPostService(
       method: "POST",
       data: { title: req.title, content: req.content },
     });
-
-    revalidateTag("POST-LIST");
+    if (!res.ok) {
+      throw new Error("Failed to create post");
+    }
+    revalidatePath("/");
 
     return {
       status: res.ok,

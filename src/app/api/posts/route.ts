@@ -5,13 +5,25 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const page = parseInt(searchParams.get("page") || "1", 10);
   const pageSize = parseInt(searchParams.get("pageSize") || "10", 10);
+  const searchQuery = searchParams.get("search") || "";
 
   const data = await prisma.post.findMany({
     skip: (page - 1) * pageSize,
     take: pageSize,
+    where: {
+      title: {
+        contains: searchQuery,
+      },
+    },
   });
 
-  const totalPosts = await prisma.post.count();
+  const totalPosts = await prisma.post.count({
+    where: {
+      title: {
+        contains: searchQuery,
+      },
+    },
+  });
 
   return NextResponse.json({
     data,

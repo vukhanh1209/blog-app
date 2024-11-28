@@ -1,7 +1,7 @@
 "use server";
 import { fetchApiUtil } from "@/lib/fetch-client";
 import { ApiResponse } from "@/types/api.type";
-import { revalidateTag } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 export async function deletePostService(
   postId: string
@@ -11,8 +11,11 @@ export async function deletePostService(
       baseApiUrl: process.env.NEXT_PUBLIC_BASE_URL + "/posts/" + postId,
       method: "DELETE",
     });
+    if (!res.ok) {
+      throw new Error("Failed to delete post");
+    }
+    revalidatePath("/");
     revalidateTag("POST-LIST");
-
     return {
       status: res.ok,
       message: res.statusText,

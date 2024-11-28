@@ -1,7 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
 import "react-quill-new/dist/quill.snow.css";
-import ReactQuill from "react-quill-new";
+import dynamic from "next/dynamic";
+import useDebounce from "@/hooks/use-debounce.hook";
+
+const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 
 type EditorWrapper = {
   onChange: (value: string) => void;
@@ -15,15 +18,10 @@ export default function TextEditor({
   defaultValue = "",
 }: EditorWrapper) {
   const [value, setValue] = useState(defaultValue || "");
-
+  const debounceValue = useDebounce(value, 300);
   useEffect(() => {
-    const changeValueTimeout = setTimeout(() => {
-      onChange(value);
-    }, 500);
-    return () => {
-      clearTimeout(changeValueTimeout);
-    };
-  }, [value]);
+    onChange(debounceValue);
+  }, [debounceValue]);
 
   return (
     <div className="mb-4">
