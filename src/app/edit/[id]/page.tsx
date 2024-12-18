@@ -5,11 +5,13 @@ import { getPostDetailService } from "@/services/get-detail-post.service";
 import Link from "next/link";
 
 type PProps = {
-  params: Promise<{ id: string }>;
+  params: {
+    id: string;
+  };
 };
 
 export default async function EditPage({ params }: PProps) {
-  const id = (await params).id;
+  const id = params.id;
   const data = (await getPostDetailService(id)).result;
   return (
     <div className="container mx-auto px-4 py-20 max-w-3xl">
